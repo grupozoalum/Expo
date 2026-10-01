@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Evalúa M.I.R.A.D.A. · Expociencias Hidalgo 2026</title>
+<meta name="description" content="Ayúdanos a mejorar el proyecto M.I.R.A.D.A. con tu evaluación de Expociencias Hidalgo 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --tinta: #0E2A3B;
+    --papel: #F3F6F7;
+    --superficie: #FFFFFF;
+    --iris: #1B8A8F;
+    --iris-claro: #CDEBEA;
+    --senal: #E8B931;
+    --gris: #5B6B75;
+    --linea: #D5DEE2;
+    --error: #B3261E;
+    --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --tinta: #E4EEF1; --papel: #0F1D25; --superficie: #16283280; --iris: #4CC2C4;
+      --iris-claro: #1D3F45; --senal: #F0C64B; --gris: #9DB0B9; --linea: #2A3E48; --error: #FF8A80;
+    }
+  }
+  :root[data-theme="dark"] {
+    --tinta: #E4EEF1; --papel: #0F1D25; --superficie: #16283280; --iris: #4CC2C4;
+    --iris-claro: #1D3F45; --senal: #F0C64B; --gris: #9DB0B9; --linea: #2A3E48; --error: #FF8A80;
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--papel); color: var(--tinta);
+    font-family: var(--texto); font-size: 1.0625rem; line-height: 1.55;
+  }
+  img, svg { max-width: 100%; }
+  .envoltura { max-width: 44rem; margin: 0 auto; padding: 0 1.25rem; }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 3.5rem 0 2.5rem; display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center; }
+  .hero h1 {
+    font-family: var(--display); font-weight: 800; font-size: clamp(2.6rem, 10vw, 4.6rem);
+    line-height: .95; letter-spacing: -.02em; margin: 0 0 1rem;
+  }
+  .hero p { margin: 0; color: var(--gris); max-width: 30rem; }
+  .hero .evento { font-weight: 700; color: var(--tinta); margin-bottom: .35rem; }
+  .ojo { width: clamp(7rem, 26vw, 10rem); aspect-ratio: 1; }
+  .ojo .anillo-fondo { stroke: var(--linea); }
+  .ojo .anillo { stroke: var(--iris); transition: stroke-dashoffset .5s ease; }
+  .ojo .pupila { fill: var(--tinta); transition: r .5s ease; }
+  .ojo .iris-relleno { fill: var(--iris-claro); }
+  .ojo text { fill: var(--tinta); font-family: var(--display); font-weight: 800; }
+  @media (max-width: 34rem) { .hero { grid-template-columns: 1fr; } .ojo { order: -1; } }
+
+  /* ---------- Bloques del formulario ---------- */
+  fieldset { border: 0; padding: 0; margin: 0 0 2.75rem; min-width: 0; }
+  legend { font-family: var(--display); font-weight: 800; font-size: 1.6rem; letter-spacing: -.01em; padding: 0; margin-bottom: .35rem; }
+  .ayuda { color: var(--gris); margin: 0 0 1.25rem; font-size: .975rem; }
+  label.campo { display: block; margin-bottom: 1rem; }
+  label.campo span { display: block; font-weight: 700; margin-bottom: .35rem; }
+  label.campo small { font-weight: 400; color: var(--gris); }
+  input[type="text"], select, textarea {
+    width: 100%; font: inherit; color: var(--tinta); background: var(--superficie);
+    border: 1.5px solid var(--linea); border-radius: .6rem; padding: .7rem .85rem;
+  }
+  textarea { min-height: 6.5rem; resize: vertical; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, .escala input:focus-visible + span {
+    outline: 3px solid var(--senal); outline-offset: 2px;
+  }
+  .contador { display: block; text-align: right; font-size: .85rem; color: var(--gris); margin-top: .2rem; }
+
+  /* ---------- Criterios con escala ---------- */
+  .criterio { padding: 1.1rem 0; border-top: 1.5px solid var(--linea); }
+  .criterio:last-of-type { border-bottom: 1.5px solid var(--linea); }
+  .criterio h3 { margin: 0; font-size: 1.1rem; }
+  .criterio p { margin: .15rem 0 .8rem; color: var(--gris); font-size: .95rem; }
+  .escala { display: flex; gap: .45rem; flex-wrap: wrap; }
+  .escala label { position: relative; cursor: pointer; }
+  .escala input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .escala span {
+    display: grid; place-items: center; width: 2.9rem; height: 2.9rem; border-radius: 50%;
+    border: 1.5px solid var(--linea); background: var(--superficie); font-weight: 700;
+    transition: background .15s, border-color .15s, transform .15s;
+  }
+  .escala label:hover span { border-color: var(--iris); }
+  .escala input:checked + span { background: var(--iris); border-color: var(--iris); color: #fff; transform: scale(1.06); }
+  .escala.diez span { width: 2.45rem; height: 2.45rem; font-size: .95rem; }
+  .extremos { display: flex; justify-content: space-between; max-width: 16.5rem; font-size: .82rem; color: var(--gris); margin-top: .35rem; }
+  .escala.diez + .extremos { max-width: 28rem; }
+
+  .opciones { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .opciones label { position: relative; }
+  .opciones input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .opciones span {
+    display: inline-block; padding: .6rem 1.1rem; border-radius: 2rem; border: 1.5px solid var(--linea);
+    background: var(--superficie); font-weight: 700; cursor: pointer;
+  }
+  .opciones input:checked + span { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
+  .opciones input:focus-visible + span { outline: 3px solid var(--senal); outline-offset: 2px; }
+
+  /* ---------- Barra de envío ---------- */
+  .barra {
+    position: sticky; bottom: 0; background: var(--papel); border-top: 1.5px solid var(--linea);
+    padding: .8rem 0 calc(.8rem + env(safe-area-inset-bottom, 0px)); margin-top: 1rem; z-index: 5;
+  }
+  .barra .envoltura { display: flex; align-items: center; gap: 1rem; justify-content: space-between; }
+  .progreso { color: var(--gris); font-size: .95rem; }
+  .progreso strong { color: var(--tinta); }
+  button {
+    font: inherit; font-weight: 700; cursor: pointer; border-radius: 2rem; border: 0;
+    padding: .8rem 1.5rem; background: var(--iris); color: #fff;
+  }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  button.secundario { background: transparent; color: var(--tinta); border: 1.5px solid var(--linea); }
+  button.peligro { background: transparent; color: var(--error); border: 1.5px solid var(--error); padding: .4rem .9rem; font-size: .9rem; }
+  .mensaje { margin: 1rem 0 0; font-weight: 700; }
+  .mensaje.error { color: var(--error); }
+
+  /* ---------- Gracias ---------- */
+  .gracias { padding: 4rem 0; display: none; }
+  .gracias h2 { font-family: var(--display); font-weight: 800; font-size: 2.4rem; line-height: 1; margin: 0 0 1rem; }
+
+  /* ---------- Panel del equipo ---------- */
+  footer { padding: 2.5rem 0 3rem; color: var(--gris); font-size: .95rem; }
+  footer button { padding: .5rem 1rem; font-size: .95rem; }
+  .panel { display: none; padding-bottom: 3rem; }
+  .panel h2 { font-family: var(--display); font-weight: 800; font-size: 2rem; margin: 0 0 .5rem; }
+  .panel-acciones { display: flex; gap: .6rem; flex-wrap: wrap; margin: 1rem 0 2rem; }
+  .resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+  .resumen div { border-left: 3px solid var(--iris); padding-left: .8rem; }
+  .resumen b { display: block; font-family: var(--display); font-size: 2rem; line-height: 1.1; }
+  .barras { margin-bottom: 2.5rem; }
+  .barra-fila { display: grid; grid-template-columns: minmax(8rem, 12rem) 1fr 2.6rem; gap: .75rem; align-items: center; margin-bottom: .55rem; font-size: .95rem; }
+  .pista { height: .7rem; background: var(--linea); border-radius: 1rem; overflow: hidden; }
+  .pista i { display: block; height: 100%; background: var(--iris); border-radius: 1rem; }
+  .respuesta { border-top: 1.5px solid var(--linea); padding: 1.1rem 0; }
+  .respuesta header { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: baseline; margin-bottom: .5rem; }
+  .respuesta h4 { margin: .6rem 0 .1rem; font-size: .9rem; color: var(--gris); }
+  .respuesta p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .nota { display: inline-block; background: var(--senal); color: #2A2000; font-weight: 700; border-radius: 1rem; padding: .1rem .6rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<main id="vistaFormulario">
+  <div class="envoltura">
+    <section class="hero">
+      <div>
+        <p class="evento">Expociencias Hidalgo 2026</p>
+        <h1>Evalúa M.I.R.A.D.A.</h1>
+        <p>Tu opinión nos ayuda a llegar mejor preparados a la siguiente etapa. Toma unos 3 minutos y puedes responder sin dar tu nombre.</p>
+      </div>
+      <svg class="ojo" viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="anillo-fondo" cx="60" cy="60" r="52" fill="none" stroke-width="8"/>
+        <circle class="anillo" id="anilloProgreso" cx="60" cy="60" r="52" fill="none" stroke-width="8"
+                stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+        <circle class="iris-relleno" cx="60" cy="60" r="40"/>
+        <circle class="pupila" id="pupila" cx="60" cy="60" r="12"/>
+      </svg>
+    </section>
+
+    <form id="formulario" novalidate>
+      <fieldset>
+        <legend>Sobre ti</legend>
+        <p class="ayuda">Solo el rol es obligatorio; nos sirve para interpretar mejor tu evaluación.</p>
+        <label class="campo"><span>¿Cómo participaste?</span>
+          <select name="rol" id="rol" required>
+            <option value="">Elige una opción</option>
+            <option value="juez">Juez o evaluador oficial</option>
+            <option value="docente">Docente o asesor</option>
+            <option value="estudiante">Estudiante expositor</option>
+            <option value="visitante">Visitante</option>
+            <option value="otro">Otro</option>
+          </select>
+        </label>
+        <label class="campo"><span>Nombre <small>(opcional)</small></span>
+          <input type="text" name="nombre" maxlength="80" autocomplete="name">
+        </label>
+        <label class="campo"><span>Institución <small>(opcional)</small></span>
+          <input type="text" name="institucion" maxlength="120" autocomplete="organization">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Criterios</legend>
+        <p class="ayuda">Califica del 1 (muy por mejorar) al 5 (excelente).</p>
+        <div id="criterios"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Calificación general</legend>
+        <p class="ayuda">Del 1 al 10, ¿qué tan sólido te pareció el proyecto en conjunto?</p>
+        <div class="escala diez" id="escalaGlobal" role="radiogroup" aria-label="Calificación general del 1 al 10"></div>
+        <div class="extremos"><span>Muy débil</span><span>Sobresaliente</span></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>¿Debería avanzar a la etapa nacional?</legend>
+        <div class="opciones" role="radiogroup">
+          <label><input type="radio" name="recomienda" value="si"><span>Sí</span></label>
+          <label><input type="radio" name="recomienda" value="tal_vez"><span>Con ajustes</span></label>
+          <label><input type="radio" name="recomienda" value="no"><span>Todavía no</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Tus comentarios</legend>
+        <p class="ayuda">Mientras más concreto, más útil. Todos son opcionales.</p>
+        <label class="campo"><span>¿Qué fue lo más fuerte del proyecto?</span>
+          <textarea name="gusto" maxlength="1500" data-contador></textarea>
+        </label>
+        <label class="campo"><span>¿Qué deberíamos mejorar?</span>
+          <textarea name="mejorar" maxlength="1500" data-contador></textarea>
+        </label>
+        <label class="campo"><span>Sugerencias o ideas para la siguiente versión</span>
+          <textarea name="sugerencias" maxlength="1500" data-contador></textarea>
+        </label>
+        <label class="campo"><span>Preguntas que te quedaron sin responder</span>
+          <textarea name="preguntas" maxlength="1500" data-contador></textarea>
+        </label>
+      </fieldset>
+      <p class="mensaje" id="mensaje" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <div class="barra">
+    <div class="envoltura">
+      <span class="progreso" id="textoProgreso"><strong>0</strong> de 11 respuestas obligatorias</span>
+      <button type="submit" form="formulario" id="botonEnviar">Enviar evaluación</button>
+    </div>
+  </div>
+</main>
+
+<section class="gracias envoltura" id="vistaGracias" aria-live="polite">
+  <h2>Gracias por tu mirada.</h2>
+  <p>Recibimos tu evaluación. La leeremos con calma y la usaremos para mejorar el proyecto.</p>
+  <button class="secundario" id="otraEvaluacion">Enviar otra evaluación</button>
+</section>
+
+<section class="panel envoltura" id="vistaPanel">
+  <h2>Resultados</h2>
+  <p id="panelUsuario" class="ayuda"></p>
+  <div class="panel-acciones">
+    <button id="recargar">Actualizar</button>
+    <button class="secundario" id="exportar">Descargar CSV</button>
+    <button class="secundario" id="salir">Cerrar sesión</button>
+    <button class="secundario" id="volver">Volver al formulario</button>
+  </div>
+  <div id="panelContenido"></div>
+</section>
+
+<footer class="envoltura">
+  <p>Proyecto M.I.R.A.D.A. · Expociencias Hidalgo 2026</p>
+  <button class="secundario" id="entrarEquipo">Acceso del equipo</button>
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, getDocs, query, orderBy, deleteDoc, doc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAnq1OZavOTquMPyLs_etqA0qystCd7rMI",
+    authDomain: "oracles-99bc3.firebaseapp.com",
+    projectId: "oracles-99bc3",
+    storageBucket: "oracles-99bc3.firebasestorage.app",
+    messagingSenderId: "785165056789",
+    appId: "1:785165056789:web:7d49118e587eb5760d871c",
+    measurementId: "G-757G5G9792"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const COLECCION = "evaluaciones_mirada";
+  // Deben coincidir con isAdmin() e isRicardo() de tus reglas
+  const EQUIPO = ["GmoVWbYskzMA51DxghPVcyhdgEA3", "L4xKlU0he3ODXAcC8Wptr6aqu662", "NTzo9WQuD5XayDet6qUlATGE1t43"];
+
+  const CRITERIOS = [
+    { id: "originalidad", titulo: "Originalidad e innovación", desc: "¿La idea aporta algo nuevo o resuelve el problema de forma distinta?" },
+    { id: "metodologia", titulo: "Método científico", desc: "Planteamiento del problema, hipótesis, pruebas y análisis de resultados." },
+    { id: "impacto", titulo: "Impacto social", desc: "¿Qué tanto beneficia a las personas o a la comunidad a la que va dirigido?" },
+    { id: "prototipo", titulo: "Prototipo y funcionamiento", desc: "¿El prototipo funciona y demuestra lo que promete?" },
+    { id: "dominio", titulo: "Dominio del tema", desc: "Seguridad y profundidad al explicar los fundamentos." },
+    { id: "comunicacion", titulo: "Exposición oral", desc: "Claridad, orden y manejo del tiempo al presentar." },
+    { id: "material", titulo: "Cartel y stand", desc: "Material visual claro, legible y bien organizado." },
+    { id: "respuestas", titulo: "Respuesta a preguntas", desc: "¿Respondieron con argumentos a las dudas del público y los jueces?" }
+  ];
+  const ROLES = { juez: "Juez", docente: "Docente", estudiante: "Estudiante", visitante: "Visitante", otro: "Otro" };
+  const RECOMIENDA = { si: "Sí", tal_vez: "Con ajustes", no: "Todavía no" };
+  const OBLIGATORIAS = CRITERIOS.length + 3; // criterios + rol + global + recomienda
+
+  const $ = (s) => document.querySelector(s);
+  const form = $("#formulario");
+
+  // ---------- Construir escalas ----------
+  const contCriterios = $("#criterios");
+  CRITERIOS.forEach((c) => {
+    const div = document.createElement("div");
+    div.className = "criterio";
+    let botones = "";
+    for (let i = 1; i <= 5; i++) {
+      botones += `<label><input type="radio" name="c_${c.id}" value="${i}" aria-label="${c.titulo}: ${i}"><span>${i}</span></label>`;
+    }
+    div.innerHTML = `<h3 id="t_${c.id}">${c.titulo}</h3><p>${c.desc}</p>
+      <div class="escala" role="radiogroup" aria-labelledby="t_${c.id}">${botones}</div>
+      <div class="extremos"><span>Por mejorar</span><span>Excelente</span></div>`;
+    contCriterios.appendChild(div);
+  });
+  const escalaGlobal = $("#escalaGlobal");
+  for (let i = 1; i <= 10; i++) {
+    escalaGlobal.insertAdjacentHTML("beforeend",
+      `<label><input type="radio" name="global" value="${i}" aria-label="Calificación general: ${i}"><span>${i}</span></label>`);
+  }
+
+  // ---------- Contadores de caracteres ----------
+  document.querySelectorAll("[data-contador]").forEach((ta) => {
+    const c = document.createElement("small");
+    c.className = "contador";
+    ta.after(c);
+    const act = () => (c.textContent = `${ta.value.length} / ${ta.maxLength}`);
+    ta.addEventListener("input", act); act();
+  });
+
+  // ---------- Progreso (el ojo se abre conforme respondes) ----------
+  const anillo = $("#anilloProgreso");
+  const pupila = $("#pupila");
+  const CIRC = 2 * Math.PI * 52;
+  function contarRespondidas() {
+    const fd = new FormData(form);
+    let n = 0;
+    CRITERIOS.forEach((c) => fd.get("c_" + c.id) && n++);
+    if (fd.get("rol")) n++;
+    if (fd.get("global")) n++;
+    if (fd.get("recomienda")) n++;
+    return n;
+  }
+  function actualizarProgreso() {
+    const n = contarRespondidas();
+    const p = n / OBLIGATORIAS;
+    anillo.style.strokeDashoffset = CIRC * (1 - p);
+    pupila.setAttribute("r", 12 + p * 14);
+    $("#textoProgreso").innerHTML = n === OBLIGATORIAS
+      ? "<strong>Listo</strong>, ya puedes enviar"
+      : `<strong>${n}</strong> de ${OBLIGATORIAS} respuestas obligatorias`;
+  }
+  form.addEventListener("change", actualizarProgreso);
+  actualizarProgreso();
+
+  // ---------- Envío ----------
+  const limpiar = (v, max) => String(v || "").trim().slice(0, max);
+  const mensaje = $("#mensaje");
+  const boton = $("#botonEnviar");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    mensaje.className = "mensaje"; mensaje.textContent = "";
+    const fd = new FormData(form);
+
+    const faltantes = [];
+    if (!fd.get("rol")) faltantes.push("cómo participaste");
+    CRITERIOS.forEach((c) => { if (!fd.get("c_" + c.id)) faltantes.push(c.titulo.toLowerCase()); });
+    if (!fd.get("global")) faltantes.push("la calificación general");
+    if (!fd.get("recomienda")) faltantes.push("si debería avanzar a nacional");
+    if (faltantes.length) {
+      mensaje.className = "mensaje error";
+      mensaje.textContent = "Falta responder: " + faltantes.join(", ") + ".";
+      mensaje.scrollIntoView({ block: "center" });
+      return;
+    }
+
+    const criterios = {};
+    CRITERIOS.forEach((c) => (criterios[c.id] = parseInt(fd.get("c_" + c.id), 10)));
+
+    const datos = {
+      rol: fd.get("rol"),
+      nombre: limpiar(fd.get("nombre"), 80),
+      institucion: limpiar(fd.get("institucion"), 120),
+      criterios,
+      global: parseInt(fd.get("global"), 10),
+      recomienda: fd.get("recomienda"),
+      gusto: limpiar(fd.get("gusto"), 1500),
+      mejorar: limpiar(fd.get("mejorar"), 1500),
+      sugerencias: limpiar(fd.get("sugerencias"), 1500),
+      preguntas: limpiar(fd.get("preguntas"), 1500),
+      creadoEn: serverTimestamp()
+    };
+
+    boton.disabled = true; boton.textContent = "Enviando…";
+    try {
+      await addDoc(collection(db, COLECCION), datos);
+      form.reset(); actualizarProgreso();
+      document.querySelectorAll("[data-contador]").forEach((t) => t.dispatchEvent(new Event("input")));
+      $("#vistaFormulario").style.display = "none";
+      $("#vistaGracias").style.display = "block";
+      window.scrollTo(0, 0);
+    } catch (err) {
+      console.error(err);
+      mensaje.className = "mensaje error";
+      mensaje.textContent = err.code === "permission-denied"
+        ? "No se pudo guardar: las reglas de Firestore rechazaron los datos. Revisa que estén publicadas las reglas de evaluaciones_mirada."
+        : "No se pudo enviar. Revisa tu conexión a internet e inténtalo de nuevo.";
+    } finally {
+      boton.disabled = false; boton.textContent = "Enviar evaluación";
+    }
+  });
+
+  $("#otraEvaluacion").addEventListener("click", () => {
+    $("#vistaGracias").style.display = "none";
+    $("#vistaFormulario").style.display = "block";
+    window.scrollTo(0, 0);
+  });
+
+  // ---------- Panel del equipo ----------
+  let registros = [];
+  const escapar = (s) => String(s ?? "").replace(/[&<>"']/g, (ch) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  const promedio = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0);
+
+  function mostrarVista(v) {
+    $("#vistaFormulario").style.display = v === "form" ? "block" : "none";
+    $("#vistaGracias").style.display = "none";
+    $("#vistaPanel").style.display = v === "panel" ? "block" : "none";
+    window.scrollTo(0, 0);
+  }
+
+  $("#entrarEquipo").addEventListener("click", async () => {
+    if (auth.currentUser && EQUIPO.includes(auth.currentUser.uid)) { mostrarVista("panel"); cargarResultados(); return; }
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo iniciar sesión. Verifica que el proveedor de Google esté habilitado en Firebase Authentication y que este dominio esté autorizado.");
+    }
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) return;
+    if (EQUIPO.includes(user.uid)) {
+      $("#panelUsuario").textContent = "Sesión iniciada como " + (user.email || user.uid);
+      mostrarVista("panel");
+      cargarResultados();
+    } else {
+      alert("Esta cuenta no tiene acceso a los resultados.");
+      signOut(auth);
+    }
+  });
+
+  $("#salir").addEventListener("click", async () => { await signOut(auth); mostrarVista("form"); });
+  $("#volver").addEventListener("click", () => mostrarVista("form"));
+  $("#recargar").addEventListener("click", cargarResultados);
+
+  async function cargarResultados() {
+    const cont = $("#panelContenido");
+    cont.innerHTML = "<p>Cargando evaluaciones…</p>";
+    try {
+      const snap = await getDocs(query(collection(db, COLECCION), orderBy("creadoEn", "desc")));
+      registros = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      pintarResultados();
+    } catch (err) {
+      console.error(err);
+      cont.innerHTML = `<p class="mensaje error">No se pudieron leer los resultados (${escapar(err.code || "error")}). Revisa que tu UID esté en isAdmin() o isRicardo().</p>`;
+    }
+  }
+
+  function pintarResultados() {
+    const cont = $("#panelContenido");
+    if (!registros.length) {
+      cont.innerHTML = "<p>Aún no hay evaluaciones. Comparte el enlace de esta página con jueces y visitantes.</p>";
+      return;
+    }
+    const prom = promedio(registros.map((r) => r.global || 0));
+    const nacional = registros.filter((r) => r.recomienda === "si").length;
+    const jueces = registros.filter((r) => r.rol === "juez").length;
+
+    let html = `<div class="resumen">
+      <div><b>${registros.length}</b>evaluaciones</div>
+      <div><b>${prom.toFixed(1)}</b>promedio general / 10</div>
+      <div><b>${Math.round((nacional / registros.length) * 100)}%</b>lo pasaría a nacional</div>
+      <div><b>${jueces}</b>de jueces</div>
+    </div><div class="barras">`;
+
+    CRITERIOS.map((c) => ({ ...c, p: promedio(registros.map((r) => r.criterios?.[c.id] || 0)) }))
+      .sort((a, b) => a.p - b.p)
+      .forEach((c) => {
+        html += `<div class="barra-fila"><span>${c.titulo}</span>
+          <div class="pista" role="img" aria-label="${c.p.toFixed(1)} de 5"><i style="width:${(c.p / 5) * 100}%"></i></div>
+          <b>${c.p.toFixed(1)}</b></div>`;
+      });
+    html += `</div><p class="ayuda">Los criterios están ordenados del más débil al más fuerte: empieza a mejorar por arriba.</p>`;
+
+    registros.forEach((r) => {
+      const fecha = r.creadoEn?.toDate ? r.creadoEn.toDate().toLocaleString("es-MX") : "";
+      const bloque = (t, v) => (v ? `<h4>${t}</h4><p>${escapar(v)}</p>` : "");
+      html += `<article class="respuesta">
+        <header>
+          <span><span class="nota">${escapar(r.global)}/10</span>
+            <strong>${escapar(r.nombre || "Anónimo")}</strong> · ${escapar(ROLES[r.rol] || r.rol)}${r.institucion ? " · " + escapar(r.institucion) : ""}</span>
+          <small>${escapar(fecha)}</small>
+        </header>
+        <p>Nacional: <strong>${escapar(RECOMIENDA[r.recomienda] || "—")}</strong></p>
+        ${bloque("Lo más fuerte", r.gusto)}
+        ${bloque("Qué mejorar", r.mejorar)}
+        ${bloque("Sugerencias", r.sugerencias)}
+        ${bloque("Preguntas", r.preguntas)}
+        <p style="margin-top:.8rem"><button class="peligro" data-borrar="${escapar(r.id)}">Eliminar</button></p>
+      </article>`;
+    });
+    cont.innerHTML = html;
+
+    cont.querySelectorAll("[data-borrar]").forEach((b) =>
+      b.addEventListener("click", async () => {
+        if (!confirm("¿Eliminar esta evaluación? No se puede deshacer.")) return;
+        try { await deleteDoc(doc(db, COLECCION, b.dataset.borrar)); cargarResultados(); }
+        catch (err) { alert("No se pudo eliminar: " + (err.code || err.message)); }
+      }));
+  }
+
+  $("#exportar").addEventListener("click", () => {
+    if (!registros.length) return;
+    const cols = ["fecha", "rol", "nombre", "institucion", ...CRITERIOS.map((c) => c.id), "global", "recomienda", "gusto", "mejorar", "sugerencias", "preguntas"];
+    const csvCelda = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const filas = registros.map((r) => [
+      r.creadoEn?.toDate ? r.creadoEn.toDate().toISOString() : "",
+      r.rol, r.nombre, r.institucion,
+      ...CRITERIOS.map((c) => r.criterios?.[c.id]),
+      r.global, r.recomienda, r.gusto, r.mejorar, r.sugerencias, r.preguntas
+    ].map(csvCelda).join(","));
+    const blob = new Blob(["\uFEFF" + [cols.join(","), ...filas].join("\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "evaluaciones_mirada.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+</script>
+</body>
+</html>
